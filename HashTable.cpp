@@ -125,12 +125,16 @@ bool HashTable::remove(const string key)
     unsigned long indice, base = this->hash(key);
     int i = 0;
     indice = (base+i) % getSize();
-    HashEntry<string, string>* curr = data[indice];
+    HashEntry<string, string>* deletar = data[indice];
 
     while(data[indice]->getKey() != key && i < this->getSize()){
         i++;
         indice = (base+i)%this->getSize();
     }
+    deletar = data[indice];
+    delete deletar;
+
+    return true;
        
 }
 
