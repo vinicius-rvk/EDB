@@ -73,8 +73,15 @@ HashTable::~HashTable()
  */
 string HashTable::get(const string key)
 {
-    std::cout << "\tERRO: função 'get' ainda não foi implementada.\n";
-    std::exit(1);
+    unsigned long indice, base = this->hash(key);
+    
+    for(int i = 0; i < this->getSize(); i++){
+        indice = (base+i) % getSize();
+        if(data[indice] != nullptr && data[indice] != ENTRY_DELETED && key == data[indice]->getKey()){
+            return this->data[indice]->getValue();
+        }
+    }
+    return nullptr;
 }
 
 /**
@@ -83,20 +90,20 @@ string HashTable::get(const string key)
  */
 bool HashTable::put(const string key, const string value)
 {
+
     unsigned long indice, base = this->hash(key);
-	int hashEntry_deletado = -1;
+    int hashEntry_deletado = -1;
     HashEntry<string, string>* novo = 
-    	new HashEntry<string, string>(key, value);
+        new HashEntry<string, string>(key, value);
 
     for(int i = 0; i < this->getSize(); i++){
-    	indice = (base+i) % this->getSize(); // atualização do indice da tabela
+        indice = (base+i) % this->getSize(); // atualização do indice da tabela
 
-    	if(novo->getKey() == this->data[indice]->getKey()){
-    		cout << "  atualização -> ate aqui ok" << endl;
-    		this->data[indice]->setValue(value);
-    		return true;
-    	}
-    	else if(data[indice] == nullptr){
+        if(data[indice] != nullptr && key == this->data[indice]->getKey()){
+            this->data[indice] = novo;
+            return true;
+        }
+        else if(data[indice] == nullptr){
 		    if(hashEntry_deletado != -1){
 				data[hashEntry_deletado] = novo;
 		    }
@@ -123,18 +130,17 @@ return false;
 bool HashTable::remove(const string key)
 {
     unsigned long indice, base = this->hash(key);
-    int i = 0;
-    indice = (base+i) % getSize();
-    HashEntry<string, string>* deletar = data[indice];
-
-    while(data[indice]->getKey() != key && i < this->getSize()){
-        i++;
-        indice = (base+i)%this->getSize();
+    
+    for(int i = 0; i < this->getSize(); i++){
+        indice = (base+i) % getSize();
+        if(data[indice] != nullptr && data[indice] != ENTRY_DELETED && key == data[indice]->getKey()){
+            this->data[indice] = ENTRY_DELETED;
+            quantity--;
+            return true;
+        }
     }
-    deletar = data[indice];
-    delete deletar;
 
-    return true;
+    return false;
        
 }
 
