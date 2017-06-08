@@ -250,20 +250,35 @@ void HashTable::resize(int newSize)
     }
     
     // Atualize o tamanho da tabela (this->size)
-    
+    int aux = this->size;
+    this->size = newSize;
+
     // Transifra as entradas válidas que estão no array antigo para o novo
     // BEGIN-FOR     Percorra cada nó do array antigo
+    for(int i = 0; i < aux ; i++){
     //  BEGIN-IF    Se entry é válida
-    //              Insira no Novo Array, tratando possíveis colisões
+        if(data[i] != nullptr && data[i] != ENTRY_DELETED){
+    //      Insira no Novo Array, tratando possíveis colisões
+            int base = hash(data[i]->getKey());
+                int j = 0;
+                int indice;
+            do{
+                indice = (base + j)% this->size;
+                j++;
+                //cout << indice <<" " << size << endl;
+            }while(newData[indice] != nullptr );
+            newData[indice] = data[i];
     //  END-IF
+        }
     // END-FOR
-    
+    }
     // Delete o antigo array
+    delete[] data;   
     // Atualize o this->data para apontar para o novo array
+    this->data = newData;
     
-    
-    std::cout << "ERRO: Método resize(int) ainda não foi implementado.\n" << std::endl;
-    std::exit(1);
+    //std::cout << "ERRO: Método resize(int) ainda não foi implementado.\n" << std::endl;
+    //std::exit(1);
 }
 
 inline float HashTable::getAlpha()

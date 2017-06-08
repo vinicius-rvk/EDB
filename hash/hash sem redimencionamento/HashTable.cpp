@@ -95,17 +95,18 @@ bool HashTable::put(const string key, const string value)
 
     unsigned long indice, base = this->hash(key);
     int hashEntry_deletado = -1;
-    HashEntry<string, string>* novo = 
-        new HashEntry<string, string>(key, value);
 
     for(int i = 0; i < this->getSize(); i++){
         indice = (base+i) % this->getSize(); // atualização do indice da tabela
 
         if(data[indice] != nullptr && data[indice] != ENTRY_DELETED && key == this->data[indice]->getKey()){
-            this->data[indice] = novo;
+            this->data[indice]->setValue(value);
             return true;
         }
         else if(data[indice] == nullptr){
+            HashEntry<string, string>* novo = 
+                new HashEntry<string, string>(key, value);
+            
 		    if(hashEntry_deletado != -1){
 				data[hashEntry_deletado] = novo;
 		    }
@@ -118,7 +119,6 @@ bool HashTable::put(const string key, const string value)
 		else if(data[indice] == ENTRY_DELETED && hashEntry_deletado == -1){
 			hashEntry_deletado = indice;
 		}
-		else{}
 		 
 	}
 return false;
@@ -136,6 +136,7 @@ bool HashTable::remove(const string key)
     for(int i = 0; i < this->getSize(); i++){
         indice = (base+i) % getSize();
         if(data[indice] != nullptr && data[indice] != ENTRY_DELETED && key == data[indice]->getKey()){
+            delete this->data[indice];
             this->data[indice] = ENTRY_DELETED;
             quantity--;
             return true;
